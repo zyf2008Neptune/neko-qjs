@@ -43,7 +43,8 @@ void nekoray_qjs_new(nekoray_qjs_new_arg arg) {
             "import * as os from 'os';\n"
             "globalThis.std = std;\n"
             "globalThis.os = os;\n";
-        JS_Eval(ctx, str, strlen(str), "<std>", JS_EVAL_TYPE_MODULE);
+        JSValue v = JS_Eval(ctx, str, strlen(str), "<std>", JS_EVAL_TYPE_MODULE);
+        JS_FreeValue(ctx, v);
     }
 
     // nekoray func
@@ -58,6 +59,7 @@ void nekoray_qjs_new(nekoray_qjs_new_arg arg) {
 }
 
 void nekoray_qjs_free(const nekoray_qjs_context *neko_ctx) {
+    js_std_free_handlers(neko_ctx->rt);
     JS_FreeContext(neko_ctx->ctx);
     JS_FreeRuntime(neko_ctx->rt);
 }
