@@ -11,6 +11,7 @@ typedef struct nekoray_qjs_context {
 
 typedef struct nekoray_qjs_new_arg {
     nekoray_qjs_context *neko_ctx;
+    char enable_std;
     //
     JSValue (*func_log)(JSContext *ctx, JSValue this_val, int argc, JSValue *argv);
 } nekoray_qjs_new_arg;

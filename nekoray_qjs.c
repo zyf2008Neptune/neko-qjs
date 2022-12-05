@@ -1,6 +1,8 @@
 #include "nekoray_qjs.h"
 #include "quickjs-libc.h"
 
+#include <string.h>
+
 static JSContext *JS_NewCustomContext(JSRuntime *rt) {
     JSContext *ctx = JS_NewContextRaw(rt);
     if (!ctx)
@@ -16,15 +18,6 @@ static JSContext *JS_NewCustomContext(JSRuntime *rt) {
     JS_AddIntrinsicTypedArrays(ctx);
     JS_AddIntrinsicPromise(ctx);
     JS_AddIntrinsicBigInt(ctx);
-    {
-        extern JSModuleDef *js_init_module_std(JSContext * ctx, const char *name);
-        js_init_module_std(ctx, "std");
-    }
-    {
-        extern JSModuleDef *js_init_module_os(JSContext * ctx, const char *name);
-        js_init_module_os(ctx, "os");
-    }
-    // js_std_eval_binary(ctx, qjsc_util, qjsc_util_size, 1);
     return ctx;
 }
 
@@ -32,11 +25,26 @@ static JSContext *JS_NewCustomContext(JSRuntime *rt) {
 
 void nekoray_qjs_new(nekoray_qjs_new_arg arg) {
     JSRuntime *rt = JS_NewRuntime();
-    // js_std_set_worker_new_context_func(JS_NewCustomContext);
-    // js_std_init_handlers(rt);
-    // JS_SetModuleLoaderFunc(rt, NULL, js_module_loader, NULL);
+    js_std_set_worker_new_context_func(JS_NewCustomContext);
+    js_std_init_handlers(rt);
+    JS_SetModuleLoaderFunc(rt, NULL, js_module_loader, NULL);
     JSContext *ctx = JS_NewCustomContext(rt);
     js_std_add_helpers(ctx, 0, NULL);
+
+    if (arg.enable_std) {
+        {
+            js_init_module_std(ctx, "std");
+        }
+        {
+            js_init_module_os(ctx, "os");
+        }
+        const char *str =
+            "import * as std from 'std';\n"
+            "import * as os from 'os';\n"
+            "globalThis.std = std;\n"
+            "globalThis.os = os;\n";
+        JS_Eval(ctx, str, strlen(str), "<std>", JS_EVAL_TYPE_MODULE);
+    }
 
     // nekoray func
     JSValue global_obj = JS_GetGlobalObject(ctx);
