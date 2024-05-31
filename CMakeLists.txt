@@ -8,7 +8,6 @@ set(CMAKE_C_VISIBILITY_PRESET hidden)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_STANDARD 20)
 
 
 macro(xcheck_add_c_compiler_flag FLAG)
@@ -67,6 +66,7 @@ set(quickjs_sources
         libbf.c
         cutils.c
         quickjs-libc.c
+        nekoray_qjs.c
 )
 
 
@@ -102,7 +102,12 @@ if(NOT MSVC)
 endif()
 
 add_library(${PROJECT_NAME} ${quickjs_sources})
-target_compile_definitions(${PROJECT_NAME} PRIVATE ${qjs_defines})
+target_compile_definitions(${PROJECT_NAME}
+	 PRIVATE
+	 CONFIG_VERSION="nekoray"
+	 CONFIG_BIGNUM
+	 ${qjs_defines}
+)
 
 target_include_directories(${PROJECT_NAME} PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>  
