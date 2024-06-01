@@ -71,21 +71,13 @@ set(quickjs_sources
 
 
 
-#if (LINUX)
-#    target_link_libraries(${PROJECT_NAME} PUBLIC dl)
-#endif ()
+if (LINUX)
+    target_link_libraries(${PROJECT_NAME} PUBLIC dl)
+endif ()
 
-#if (MSVC)
-#    set(MSVC_JS_STRICT_NAN_BOXING "JS_STRICT_NAN_BOXING")
-#endif ()
-
-#target_compile_definitions(${PROJECT_NAME}
-#        PRIVATE
-#        CONFIG_VERSION="nekoray"
-#        _GNU_SOURCE
-#        CONFIG_BIGNUM
-#        ${MSVC_JS_STRICT_NAN_BOXING}
-#        )
+if (MSVC)
+    set(MSVC_JS_STRICT_NAN_BOXING "JS_STRICT_NAN_BOXING")
+endif ()
 
 
 list(APPEND qjs_defines _GNU_SOURCE)
@@ -107,6 +99,7 @@ target_compile_definitions(${PROJECT_NAME}
 	 CONFIG_VERSION="nekoray"
 	 CONFIG_BIGNUM
 	 ${qjs_defines}
+     ${MSVC_JS_STRICT_NAN_BOXING}
 )
 
 target_include_directories(${PROJECT_NAME} PUBLIC

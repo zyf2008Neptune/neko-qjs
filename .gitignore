@@ -3,3 +3,4 @@
 /out/build/x64-debug
 /out/build/x64-release
 /out/build/clang-x64
+/out/build/msvc-x64
